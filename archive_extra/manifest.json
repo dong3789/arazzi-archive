@@ -1,0 +1,77 @@
+[
+  {
+    "url": "https://www.instagram.com/arachi.official/",
+    "error": "HTTP Error 429: Too Many Requests"
+  },
+  {
+    "url": "https://www.instagram.com/p/CSNrcdosQX0/",
+    "html": "archive_extra/extra_page_02.html",
+    "images": []
+  },
+  {
+    "url": "https://twitter.com/arachi_copin/status/1419829885099409409",
+    "html": "archive_extra/extra_page_03.html",
+    "images": [
+      {
+        "url": "https://abs-0.twimg.com/emoji/v2/svg/26a0.svg",
+        "file": "archive_extra/extra_page_03_images/image_000.jpg"
+      }
+    ]
+  },
+  {
+    "url": "https://blog.naver.com/ilovecharacterblog/222360002011",
+    "html": "archive_extra/extra_page_04.html",
+    "images": []
+  },
+  {
+    "url": "https://e.kakao.com/creator/Y90PCM?ip=08860X",
+    "html": "archive_extra/extra_page_05.html",
+    "images": []
+  },
+  {
+    "url": "https://www.facebook.com/arachi.copin/",
+    "error": "HTTP Error 400: Bad Request"
+  },
+  {
+    "url": "https://m.yes24.com/Goods/Detail/95752352",
+    "html": "archive_extra/extra_page_07.html",
+    "images": [
+      {
+        "url": "https://image.yes24.com/sysimage/renew/loadSpace.png",
+        "file": "archive_extra/extra_page_07_images/image_000.png"
+      },
+      {
+        "url": "https://image.yes24.com/momo/Noimg_L.jpg",
+        "file": "archive_extra/extra_page_07_images/image_001.jpg"
+      },
+      {
+        "url": "https://image.yes24.com/goods/95752352/XL",
+        "file": "archive_extra/extra_page_07_images/image_002.jpg"
+      },
+      {
+        "url": "https://image.yes24.com/Goods/95752352/M",
+        "file": "archive_extra/extra_page_07_images/image_003.jpg"
+      },
+      {
+        "url": "https://image.yes24.com/Goods/95752352/S",
+        "file": "archive_extra/extra_page_07_images/image_004.jpg"
+      },
+      {
+        "url": "https://image.yes24.com/goods/95752352/BACK/XL",
+        "file": "archive_extra/extra_page_07_images/image_005.jpg"
+      },
+      {
+        "url": "https://image.yes24.com/goods/95752352/SIDE/XL",
+        "file": "archive_extra/extra_page_07_images/image_006.jpg"
+      },
+      {
+        "url": "https://image.yes24.com/images/00_Event/2023/0215Welcome/bn_sns.png?v=20250623",
+        "file": "archive_extra/extra_page_07_images/image_007.png"
+      },
+      {
+        "url": "https://image.yes24.com/images/01_Banner/settle/bn_cart_m_230222.png?v=20230222",
+        "file": "archive_extra/extra_page_07_images/image_008.png"
+      }
+    ]
+  }
+]
