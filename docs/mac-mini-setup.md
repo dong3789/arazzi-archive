@@ -1,28 +1,39 @@
 # Mac mini Setup (M4 / 24GB)
 
-## 판단
-- ComfyUI 추론: 충분히 가능
-- IPAdapter 테스트: 가능
-- 소규모 캐릭터 LoRA 학습: 해볼 만함
+## 현재 상태: 설치 완료
 
-## 추천 접근
-- 처음부터 무거운 SDXL 고해상도 학습으로 가지 말 것
-- 작은 실험으로 재현성부터 확인
-- 병목은 대개 머신보다 데이터셋 품질과 설정 과욕임
+### 하드웨어
+- Mac mini M4, 24GB unified memory
+- macOS Darwin 25.3.0
 
-## 체크리스트
-- Python / venv 준비
-- ComfyUI 설치
-- 모델 저장 경로 정리
-- 외장 SSD 쓸지 결정
-- 충분한 디스크 여유 확보
+### 소프트웨어 환경
+- Python 3.12.x (ARM64, Homebrew)
+- venv: `arazzi-archive/.venv/`
+- PyTorch 2.11.0 (MPS backend 활성)
+- kohya-ss/sd-scripts: `tools/sd-scripts/`
 
-## 우선순위
-1. ComfyUI 정상 실행
-2. 참조 이미지 기반 생성 테스트
-3. 데이터셋 정리
-4. LoRA 1차 학습
+### 설치된 주요 패키지
+- torch 2.11.0
+- diffusers 0.32.1
+- transformers 4.54.1
+- accelerate 1.6.0
+- safetensors 0.4.5
 
-## 기대치
-- 아주 빠르진 않을 수 있음
-- 하지만 아라찌 같은 단순 2D 캐릭터는 충분히 도전 가능
+## 남은 작업
+1. **베이스 모델 다운로드** → `models/` 디렉토리에 배치
+   - 추천: Illustrious XL v1.0 (Civitai 또는 HuggingFace)
+   - 파일 크기: ~6.5GB
+2. `training/train_arazzi.sh` 내 `MODEL_PATH` 경로 수정
+3. 학습 실행
+
+## 활성화 방법
+```bash
+cd /Users/yoon/Projects/arazzi-archive
+source .venv/bin/activate
+```
+
+## MPS 확인
+```python
+import torch
+print(torch.backends.mps.is_available())  # True
+```
