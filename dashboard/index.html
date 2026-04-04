@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AraZZi Gallery</title>
+<meta property="og:title" content="AraZZi Gallery">
+<meta property="og:description" content="한글로 장면을 입력하면 아라찌가 그려져요">
+<meta property="og:image" content="https://arazzi.yndl.dev/images/arazzi_sample_1.png">
+<meta property="og:url" content="https://arazzi.yndl.dev">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AraZZi Gallery">
+<meta name="twitter:description" content="한글로 장면을 입력하면 아라찌가 그려져요">
+<meta name="twitter:image" content="https://arazzi.yndl.dev/images/arazzi_sample_1.png">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #faf6f0;
+    color: #5a4a3a;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, #f5e6d3, #fce4c8);
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+    border-bottom: 3px solid #e8cdb0;
+  }
+
+  header h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #8b6914;
+  }
+
+  header p {
+    font-size: 0.85rem;
+    color: #a08060;
+    margin-top: 0.3rem;
+  }
+
+  /* Generate form */
+  .gen-section {
+    padding: 1.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .gen-form {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 2px 12px rgba(139,105,20,0.1);
+  }
+
+  .gen-form label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #8b6914;
+  }
+
+  .gen-input-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+  }
+
+  .gen-input-row input {
+    flex: 1;
+    border: 2px solid #e8cdb0;
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    color: #5a4a3a;
+    background: #faf6f0;
+  }
+
+  .gen-input-row input:focus {
+    border-color: #d4a843;
+  }
+
+  .gen-input-row input::placeholder {
+    color: #c0a880;
+  }
+
+  .rand-btn {
+    background: #f5e6d3;
+    border: 2px solid #e8cdb0;
+    border-radius: 12px;
+    padding: 0 0.7rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .rand-btn:active { background: #e8cdb0; }
+
+  .gen-btn {
+    background: linear-gradient(135deg, #d4a843, #8b6914);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 0 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+
+  .gen-btn:active { opacity: 0.8; }
+  .gen-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .gen-hints {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+  }
+
+  .hint-chip {
+    background: #f5e6d3;
+    color: #8b6914;
+    border: none;
+    border-radius: 999px;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .hint-chip:active { background: #e8cdb0; }
+
+  .gen-status {
+    text-align: center;
+    padding: 0.8rem;
+    font-size: 0.8rem;
+    color: #a08060;
+    display: none;
+  }
+
+  .gen-status.active { display: block; }
+
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e8cdb0;
+    border-top-color: #8b6914;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 0.4rem;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Gallery */
+  .section {
+    padding: 1rem 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #8b6914;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e8cdb0;
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(139,105,20,0.08);
+    transition: transform 0.2s;
+    cursor: pointer;
+  }
+
+  .card:active { transform: scale(0.97); }
+
+  .card.new {
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card-info {
+    padding: 0.5rem 0.65rem;
+  }
+
+  .card-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #5a4a3a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-meta {
+    font-size: 0.62rem;
+    color: #a08060;
+    margin-top: 0.15rem;
+  }
+
+  /* Lightbox */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .lightbox.active { display: flex; }
+
+  .lightbox img {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 12px;
+  }
+
+  .lightbox-caption {
+    color: #ccc;
+    font-size: 0.85rem;
+    margin-top: 0.8rem;
+    text-align: center;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .lightbox-download {
+    display: inline-block;
+    margin-top: 0.8rem;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .lightbox-download:active { background: rgba(255,255,255,0.3); }
+
+  footer {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    font-size: 0.7rem;
+    color: #b09070;
+  }
+
+  @media (min-width: 768px) {
+    .gallery { grid-template-columns: repeat(3, 1fr); }
+    header h1 { font-size: 2.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>AraZZi Gallery</h1>
+  <p>한글로 장면을 입력하면 아라찌가 그려져요</p>
+</header>
+
+<div class="gen-section">
+  <div class="gen-form">
+    <label>어떤 아라찌를 그릴까요?</label>
+    <div class="gen-input-row">
+      <input type="text" id="promptInput" placeholder="예: 벚꽃 아래에서 케이크 먹는" autocomplete="off">
+      <button class="rand-btn" onclick="randomPrompt()" title="랜덤">🎲</button>
+      <button class="gen-btn" id="genBtn" onclick="generate()">생성</button>
+    </div>
+    <div class="gen-hints">
+      <button class="hint-chip" onclick="setPrompt('카페에서 커피 마시는')">카페 커피</button>
+      <button class="hint-chip" onclick="setPrompt('비오는 날 우산 쓴')">비오는 날</button>
+      <button class="hint-chip" onclick="setPrompt('벚꽃 아래 소풍')">벚꽃 소풍</button>
+      <button class="hint-chip" onclick="setPrompt('겨울 눈 속에서 모자 쓴')">겨울 눈</button>
+      <button class="hint-chip" onclick="setPrompt('생일 케이크 앞에서 행복')">생일 파티</button>
+      <button class="hint-chip" onclick="setPrompt('밤하늘 별 보는')">밤하늘 별</button>
+      <button class="hint-chip" onclick="setPrompt('바다에서 수영하는')">바다 수영</button>
+      <button class="hint-chip" onclick="setPrompt('캠핑 텐트 앞에서')">캠핑</button>
+    </div>
+  </div>
+  <div class="gen-status" id="genStatus">
+    <span class="spinner"></span> <span id="genStatusText">아라찌를 그리는 중... (SDXL, 약 2~3분)</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title" id="galleryTitle">Gallery</div>
+  <div class="gallery" id="gallery"></div>
+</div>
+
+<footer>
+  AraZZi Revival Project v2.0 — SDXL LoRA / novaAnimeXL / Mac mini M4
+</footer>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+  <a class="lightbox-download" id="lightbox-dl" href="" download>저장</a>
+</div>
+
+<script>
+const galleryEl = document.getElementById('gallery');
+const input = document.getElementById('promptInput');
+const btn = document.getElementById('genBtn');
+const status = document.getElementById('genStatus');
+
+// Default images (pre-generated)
+const defaults = [
+  { filename: 'arazzi_cherry_blossom.png', prompt_ko: '벚꽃 아래 간식', created: '2026-04-03' },
+  { filename: 'arazzi_rainy_cafe.png', prompt_ko: '비오는 카페', created: '2026-04-03' },
+  { filename: 'arazzi_sample_1.png', prompt_ko: '정면 웃는 표정', created: '2026-04-03' },
+  { filename: 'arazzi_sample_2.png', prompt_ko: '간식 먹는 포즈', created: '2026-04-03' },
+  { filename: 'arazzi_sample_3.png', prompt_ko: '손 흔드는 인사', created: '2026-04-03' },
+];
+
+function renderCard(item, isNew) {
+  const card = document.createElement('div');
+  card.className = 'card' + (isNew ? ' new' : '');
+  card.onclick = () => openLightbox(item);
+  const time = item.created ? new Date(item.created).toLocaleDateString('ko') : '';
+  card.innerHTML = `
+    <img src="images/${item.filename}" alt="${item.prompt_ko}" loading="lazy">
+    <div class="card-info">
+      <div class="card-title">${item.prompt_ko}</div>
+      <div class="card-meta">${time}</div>
+    </div>
+  `;
+  return card;
+}
+
+async function loadGallery() {
+  let items = [];
+  try {
+    const res = await fetch('/api/gallery');
+    if (res.ok) items = await res.json();
+  } catch {}
+
+  galleryEl.innerHTML = '';
+
+  // generated images first
+  items.forEach(item => galleryEl.appendChild(renderCard(item, false)));
+
+  // then defaults
+  defaults.forEach(d => galleryEl.appendChild(renderCard(d, false)));
+
+  document.getElementById('galleryTitle').textContent = `Gallery (${items.length + defaults.length})`;
+}
+
+const randomPrompts = [
+  // 계절/날씨
+  '벚꽃 아래 소풍', '비오는 날 우산 쓴', '겨울 눈 속에서 모자 쓴',
+  '가을 낙엽 위에 앉은', '여름 해변에서 선글라스 쓴', '봄 들판에서 뒹구는',
+  '눈사람 만드는', '무지개 아래 서있는', '태풍에 날아가는', '안개 속 산책',
+  // 음식
+  '카페에서 커피 마시는', '라면 먹는', '피자 먹는', '아이스크림 먹는',
+  '케이크 만드는', '붕어빵 먹는', '떡볶이 먹는', '초밥 먹는',
+  '핫초코 마시는', '솜사탕 든', '팝콘 먹으며 영화 보는', '쿠키 굽는',
+  // 장소
+  '도서관에서 책 읽는', '놀이공원에서 롤러코스터 탄', '공원 벤치에 앉은',
+  '마트에서 장보는', '학교 교실에서 졸고 있는', '지하철에서 졸고 있는',
+  '옥상에서 하늘 보는', '수족관에서 물고기 보는', '박물관 구경하는',
+  '빵집에서 빵 고르는', '꽃집에서 꽃 고르는', '편의점에서 간식 고르는',
+  // 취미/활동
+  '그림 그리는', '기타 치는', '요리하는', '게임하는', '춤추는',
+  '자전거 타는', '낚시하는', '캠핑 텐트 앞에서', '바다에서 수영하는',
+  '스케이트보드 타는', '뜨개질하는', '퍼즐 맞추는', '사진 찍는',
+  '편지 쓰는', '일기 쓰는', '노래 부르는', '음악 듣는',
+  '요가 하는', '줄넘기 하는', '풍선 불고 있는', '비눗방울 부는',
+  // 동물
+  '강아지랑 산책', '고양이랑 낮잠', '새 위에 앉은', '나비랑 노는',
+  '금붕어 보는', '토끼랑 당근 먹는', '오리랑 연못에서',
+  // 감정/표정
+  '생일 케이크 앞에서 행복', '밤하늘 별 보는', '달빛 아래 앉은',
+  '선물 받고 감동한', '깜짝 놀란', '부끄러워하는', '화나서 볼 부풀린',
+  '졸려서 눈 감은', '배고파서 침 흘리는', '신나서 뛰어다니는',
+  '외로워서 비 맞는', '사랑에 빠진 하트 눈', '뿌듯해하는',
+  // 의상/소품
+  '선글라스 쓴 멋쟁이', '왕관 쓴 왕자님', '망토 입은 히어로',
+  '앞치마 두른 요리사', '마법사 모자 쓴', '산타 옷 입은',
+  '파자마 입고 이불 속', '우주복 입은', '탐정 모자 쓴',
+  // 판타지/상상
+  '구름 위에 누운', '달 위에 앉은', '별을 잡으려는',
+  '무지개 미끄럼틀 타는', '거대한 도넛 위에 앉은', '우주 유영하는',
+  '풍선 잡고 하늘 나는', '작은 배 타고 바다 위', '마법 지팡이 든',
+  '거인 나라에 간', '사탕 나라에서',
+  // 일상
+  '출근길 뛰어가는', '택배 받고 좋아하는', '청소하는', '빨래 개는',
+  '알람 끄는 아침', '소파에서 TV 보는', '목욕하는', '양치하는',
+  '셀카 찍는', '전화 받는', '숙제하는', '운전하는',
+  // 기념일/이벤트
+  '크리스마스 선물 든', '할로윈 호박 든', '졸업식 학사모 쓴',
+  '새해 카운트다운', '발렌타인 초콜릿 든', '추석 송편 만드는',
+];
+
+function randomPrompt() {
+  const idx = Math.floor(Math.random() * randomPrompts.length);
+  input.value = randomPrompts[idx];
+  input.focus();
+}
+
+function setPrompt(text) {
+  input.value = text;
+  input.focus();
+}
+
+async function generate() {
+  const prompt = input.value.trim();
+  if (!prompt) { input.focus(); return; }
+
+  btn.disabled = true;
+  status.classList.add('active');
+  input.value = '';
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      // Save job_id and poll — page can be left and reopened
+      localStorage.setItem('arazzi_job', data.job_id);
+      pollJob(data.job_id);
+    } else {
+      alert(data.error || 'Error');
+      btn.disabled = false;
+      status.classList.remove('active');
+    }
+  } catch (e) {
+    alert('생성 실패: ' + e.message);
+    btn.disabled = false;
+    status.classList.remove('active');
+  }
+}
+
+async function pollJob(jobId) {
+  btn.disabled = true;
+  status.classList.add('active');
+  const statusText = document.getElementById('genStatusText');
+
+  const poll = setInterval(async () => {
+    try {
+      const res = await fetch('/api/job/' + jobId);
+      const job = await res.json();
+
+      if (job.error === 'not found') {
+        clearInterval(poll);
+        localStorage.removeItem('arazzi_job');
+        btn.disabled = false;
+        status.classList.remove('active');
+        return;
+      } else if (job.status === 'queued') {
+        statusText.textContent = `대기 중... (${job.position}번째)`;
+      } else if (job.status === 'generating') {
+        statusText.textContent = '아라찌를 그리는 중... (SDXL, 약 2~3분)';
+      } else if (job.status === 'done') {
+        clearInterval(poll);
+        localStorage.removeItem('arazzi_job');
+        btn.disabled = false;
+        status.classList.remove('active');
+
+        const card = renderCard(job.entry, true);
+        galleryEl.insertBefore(card, galleryEl.firstChild);
+        const count = galleryEl.children.length;
+        document.getElementById('galleryTitle').textContent = `Gallery (${count})`;
+      } else if (job.status === 'error') {
+        clearInterval(poll);
+        localStorage.removeItem('arazzi_job');
+        btn.disabled = false;
+        status.classList.remove('active');
+        alert('생성 실패: ' + (job.error || 'unknown'));
+      }
+    } catch {}
+  }, 2000);
+}
+
+// Resume polling if page was reopened during generation
+(function resumeJob() {
+  const jobId = localStorage.getItem('arazzi_job');
+  if (jobId) pollJob(jobId);
+})()
+
+function openLightbox(item) {
+  const src = 'images/' + item.filename;
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox-caption').textContent = item.prompt_ko;
+  document.getElementById('lightbox-dl').href = src;
+  document.getElementById('lightbox-dl').download = item.filename;
+  document.getElementById('lightbox').classList.add('active');
+}
+
+function closeLightbox(e) {
+  if (e && e.target.closest('.lightbox-download')) return;
+  document.getElementById('lightbox').classList.remove('active');
+}
+
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') generate();
+});
+
+loadGallery();
+</script>
+
+</body>
+</html>

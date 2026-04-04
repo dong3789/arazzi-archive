@@ -1,0 +1,15 @@
+[general]
+shuffle_caption = false
+caption_extension = ".txt"
+keep_tokens = 1
+
+[[datasets]]
+resolution = 1024
+batch_size = 1
+enable_bucket = true
+min_bucket_reso = 768
+max_bucket_reso = 1536
+
+  [[datasets.subsets]]
+  image_dir = "/Users/yoon/Projects/arazzi-archive/archive"
+  num_repeats = 3
